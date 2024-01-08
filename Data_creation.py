@@ -4,32 +4,34 @@ import cv2
 import csv
 import os
 
-cascade = ("haarcascade_frontalface_default.xml")
-detector = cv2.CascadeClassifier(cascade)
+cascade = 'haarcascade_frontalface_default.xml'
+cascade_path = os.path.join(cv2.data.haarcascades, cascade)  # Use the full path to the cascade file
+detector = cv2.CascadeClassifier(cascade_path)
 
-
-Name = str(input("enter your name: "))
-Reg_no = int(input("enter your register Number: "))
+Name = str(input("Enter your Name: "))
+Roll_Number = str(input("Enter your Roll_Number: "))
+Email = str(input("Enter your Email-id: "))
 dataset = 'dataset'
 sub_data = Name
-
 path = os.path.join(dataset, sub_data)
 
 if not os.path.isdir(path):
     os.mkdir(path)
-    print(f"Created directory: {path}")
+    print(sub_data)
 
-info = [str(Name), str(Reg_no)]
-with open('student.csv', 'a') as csvFile:
+info = [Name, Roll_Number, Email]
+csv_file_path = 'student.csv'
+
+with open(csv_file_path, 'a', newline='') as csvFile:
     write = csv.writer(csvFile)
     write.writerow(info)
 
-print("start recording")
+print("Starting video stream...")
 cam = cv2.VideoCapture(0)
 time.sleep(2.0)
 total = 0
 
-while total < 150:
+while total < 50:
     print(total)
     _, frame = cam.read()
     img = imutils.resize(frame, width=400)
@@ -39,9 +41,7 @@ while total < 150:
 
     for (x, y, w, h) in rects:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        p = os.path.sep.join([path, "{}.png".format(
-            str(total).zfill(5))])
-        print(f"Saving image to: {p}")
+        p = os.path.join(path, "{}.png".format(str(total).zfill(5)))
         cv2.imwrite(p, img)
         total += 1
 
